@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>the Usage Cheat Engine | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="我是看b站上的植物大战僵尸修改，了解了一下CE的基本用法，实际上CE是很强大的工具，我要了解的还很多TvT 我会加油的这里只是丰富一下我的博客…如果真的想快速了解，去b站找一下简单的教程，了解到前几集就可以知道它的基本用法愉快的修改一些本地的小游戏的数值玩一下啦 看谁“保存&#x2F;记录”了阳光对象基址（esi）的值，然后一层一层往上找，直到找到“最初的记录者”——也就是位于模块（.exe）里的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="the Usage Cheat Engine">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/11/08/the-Usage-Cheat-Engine/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="我是看b站上的植物大战僵尸修改，了解了一下CE的基本用法，实际上CE是很强大的工具，我要了解的还很多TvT 我会加油的这里只是丰富一下我的博客…如果真的想快速了解，去b站找一下简单的教程，了解到前几集就可以知道它的基本用法愉快的修改一些本地的小游戏的数值玩一下啦 看谁“保存&#x2F;记录”了阳光对象基址（esi）的值，然后一层一层往上找，直到找到“最初的记录者”——也就是位于模块（.exe）里的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-11-08T07:46:24.000Z">
+<meta property="article:modified_time" content="2026-11-08T08:31:33.259Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="CE">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="游戏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "the Usage Cheat Engine",
+  "url": "https://fengjinghua69.github.io/2026/11/08/the-Usage-Cheat-Engine/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-11-08T07:46:24.000Z",
+  "dateModified": "2026-11-08T08:31:33.259Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/11/08/the-Usage-Cheat-Engine/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'the Usage Cheat Engine',
+  isHighlightShrink: true,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">the Usage Cheat Engine</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">the Usage Cheat Engine</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-08T07:46:24.000Z" title="发表于 2026-11-08 15:46:24">2026-11-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-08T08:31:33.259Z" title="更新于 2026-11-08 16:31:33">2026-11-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>我是看b站上的植物大战僵尸修改，了解了一下CE的基本用法，实际上CE是很强大的工具，我要了解的还很多TvT</p>
+<p><del>我会加油的</del><br><del>这里只是丰富一下我的博客…如果真的想快速了解，去b站找一下简单的教程，了解到前几集就可以知道它的基本用法愉快的修改一些本地的小游戏的数值玩一下啦</del></p>
+<p>看谁“保存&#x2F;记录”了阳光对象基址（esi）的值，然后一层一层往上找，直到找到“最初的记录者”——也就是位于模块（.exe）里的静态基址。<br>这里的“调用”我们可以理解为“引用”或“存放”。因为模块基址并不是直接“调用”阳光，而是模块基址 + 偏移A 这个地址里，存放着指向下一级的指针。<br>我们把你在CE里实操的过程，用你现在的理解串一遍：<br>1.	起点（动态）：你找到了阳光数量，地址是 0x1A2B92C8。这个地址每次重启都会变，没用。<br>2.	第一步溯源（找esi）：你查看“什么访问了这个地址”，发现指令是 mov eax, [esi+5560]。此时 esi 的值是 0x1A2B3D68。你明白了，0x1A2B3D68 就是阳光对象基址。<br>3.	第二步溯源（找指针）：你拿着 0x1A2B3D68 去CE里搜索（搜数值），搜出来一个地址，比如 0x0A0B0C00，这个地址里的值刚好是 0x1A2B3D68。这就意味着：0x0A0B0C00 是存放阳光对象基址的“抽屉”。<br>4.	继续溯源（找基址）：你再去查“什么访问了 0x0A0B0C00”，发现是 mov ecx, [eax+768]，此时 eax 的值是 0x0A0B0000。你再搜 0x0A0B0000……<br>5.	终点（静态）：你一直往上找，最后一步搜出来的地址变成了绿色的 “PlantsVsZombies.exe” + 0x2A9F0。你查看它的值，发现它指向了上一级的指针。<br>此时你终于得到了一条完整的寻宝路线（指针链）：<br>[[[PlantsVsZombies.exe + 0x2A9F0] + 0x768] + 0x0] + 0x5560<br>•	PlantsVsZombies.exe + 0x2A9F0 在CE里永远是绿色的，因为游戏每次启动，不管它加载到哪里，CE都知道去 .exe 的起始位置加上 0x2A9F0 去找那个初始抽屉。<br>•	只要拿到了这个公式，哪怕阳光对象（esi）藏到天涯海角，操作系统每次给它分配什么新地址，你都能顺藤摸瓜，精准算出当前的阳光数量！<br>这就是为什么我们要找基址：<br>一旦写出了 [[[PlantsVsZombies.exe + 0x2A9F0] + 0x768] + 0x0] + 0x5560 这个公式，你就可以把它写进修改器里。无论你怎么重启游戏，修改器每次运行这个公式，都能稳稳地找到阳光，实现“锁定阳光”或者“无限阳光”。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/11/08/the-Usage-Cheat-Engine/">https://fengjinghua69.github.io/2026/11/08/the-Usage-Cheat-Engine/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/CE/">CE</a><a class="post-meta__tags" href="/tags/%E6%B8%B8%E6%88%8F/">游戏</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/11/08/Anti-debugging/" title="Anti-debugging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Anti-debugging</div></div><div class="info-2"><div class="info-item-1">第一课：认识反调试反调试 &#x3D; 程序不想让你用调试器分析它，所以设置了各种”陷阱”来检测你有没有在调试。  花指令 &#x3D; 房间里故意堆满垃圾，让你看不清路（干扰静态分析，你之前学过） 反调试 &#x3D; 房间里装了摄像头和警报器，一旦发现你（调试器），就锁门或自毁（干扰动态分析）     方式 通俗解释 例子    查内存 翻自己的”档案”，看有没有被调试器动过手脚 看 BeingDebugged 标志   设陷阱 故意做一件会触发警报的事，看有没有人处理 故意触发异常，看调试器是否拦截   第二课：API 反调试 — IsDebuggerPresent一句话程序直接打电话给操作系统：”帮我查一下，有没有人在调试我？” 具体过程1234// 程序里的代码if (IsDebuggerPresent()) &#123;    // ← 打电话问系统    exit(1);                   // ← 有调试器？退出！&#125;  这个电话打给谁？ 打给 kernel32.dll（Windows 的一个系统文件） 具体打给里面的 IsDebugge...</div></div></div></a><a class="pagination-related" href="/2026/11/08/Base64/" title="Base64"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Base64</div></div><div class="info-2"><div class="info-item-1">在这里分享最基础的base64题目处理~ Base64是一种把二进制数据编码成文本的编码风格，它使用64个字符编码数据一个字节有256种不同的数据（8bit，而一个base64字符有64种数据（6bit就相当于把256位的东西转换成64进制的东西，可以把它想象成一个进制转换 4位base64可以表示3个字节（一个base64字符只能表示64种情况，要表示256种情况就要更大的空间，不足的用&#x3D;补齐） 常见变形：1.修改编码表，2.修改下标1：比如把原本0对应的A改成Q，但是不管怎么改，index没变所以只需要反推index，再去标准表里找到对应的值是多少就行，写出标准表对应的字符串之后再用标准表的解码函数进行解码 例子：  2：把base64的编码查表下标对应关系修改，对于这种修改，我们只需要推到出下标逆运算即可识别：  一，找字符串 二，看等号 三，看0x3F 脚本：最常用： import base64 编码：字符串 → Base64text = &quot;#待输入&quot; encoded = base64.b64encode(text.encode()).dec...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/11/07/the-useing-of-DOSBOX/" title="the usage of DOSBOX"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-07</div><div class="info-item-2">the usage of DOSBOX</div></div><div class="info-2"><div class="info-item-1">我们可以使用DOSBOX来运行old的文件~这里我分享DOXBOX的使用方法！ DOSBox 默认的 Z: 盘是系统模拟盘，不能直接放游戏。你需要用 mount 命令，把电脑上的一个真实文件夹映射成 DOSBox 里的 C 盘。 1.	准备游戏文件夹：在你的电脑上（比如 D 盘或 E 盘）新建一个文件夹，专门用来存放 DOS 游戏，例如 D:\DOSGames。 2.	执行挂载命令：在 DOSBox 窗口中，输入以下命令后按回车： 12mount c d:\dosgames  命令说明：mount 是挂载指令，c 代表 DOSBox 中的 C 盘，d:\dosgames 是你电脑上实际存放游戏的路径。 3.	切换盘符：挂载成功后，输入 c: 并按回车，就切换到了虚拟 C 盘，提示符会变成 C:&gt;。 4.	进入游戏目录：用 cd 命令进入具体游戏所在的子文件夹，例如： 1cd game_folder  5.	运行游戏：输入游戏的启动文件（通常是 .exe 或 .bat 文件）名。可以先输入 dir 命令查看目录下有哪些文件，找到可执行文件后，输入文件名并按回车即可运行。 </div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/09/PE-DOS/" title="PE-DOS">PE-DOS</a><time datetime="2026-11-09T06:30:36.000Z" title="发表于 2026-11-09 14:30:36">2026-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/flower/" title="flower">flower</a><time datetime="2026-11-08T07:48:24.000Z" title="发表于 2026-11-08 15:48:24">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Obfuscation/" title="Obfuscation">Obfuscation</a><time datetime="2026-11-08T07:48:07.000Z" title="发表于 2026-11-08 15:48:07">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Anti-debugging/" title="Anti-debugging">Anti-debugging</a><time datetime="2026-11-08T07:47:18.000Z" title="发表于 2026-11-08 15:47:18">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/the-Usage-Cheat-Engine/" title="the Usage Cheat Engine">the Usage Cheat Engine</a><time datetime="2026-11-08T07:46:24.000Z" title="发表于 2026-11-08 15:46:24">2026-11-08</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

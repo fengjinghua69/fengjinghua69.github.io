@@ -1,0 +1,310 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>刮开有奖 | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="运行程序之后是一个刮开有奖的界面，没有别的内容，我们在ida里搜索到了这样的几个线索：   Bcd。。。。。。最后是+&#x2F;&#x3D;，怀疑是base64，不过少了一个a，双击进去就可以看见其实是没缺的，摁a就可以看见 U g3t 1T，应该是得到flag的证明，交叉引用找到主要的函数   我们找到了在哪里运用了base64，看见这里有运用标准表 做好标注之后来观察主要的函数  可以看到要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="刮开有奖">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/05/17/gua-kai-you-jiang/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="运行程序之后是一个刮开有奖的界面，没有别的内容，我们在ida里搜索到了这样的几个线索：   Bcd。。。。。。最后是+&#x2F;&#x3D;，怀疑是base64，不过少了一个a，双击进去就可以看见其实是没缺的，摁a就可以看见 U g3t 1T，应该是得到flag的证明，交叉引用找到主要的函数   我们找到了在哪里运用了base64，看见这里有运用标准表 做好标注之后来观察主要的函数  可以看到要">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-05-17T10:34:27.000Z">
+<meta property="article:modified_time" content="2026-11-07T09:30:32.090Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="Base64">
+<meta property="article:tag" content="刮开有奖">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "刮开有奖",
+  "url": "https://fengjinghua69.github.io/2026/05/17/gua-kai-you-jiang/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-05-17T10:34:27.000Z",
+  "dateModified": "2026-11-07T09:30:32.090Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/05/17/gua-kai-you-jiang/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '刮开有奖',
+  isHighlightShrink: true,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">刮开有奖</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">刮开有奖</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-17T10:34:27.000Z" title="发表于 2026-05-17 18:34:27">2026-05-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-07T09:30:32.090Z" title="更新于 2026-11-07 17:30:32">2026-11-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/">CTF</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>运行程序之后是一个刮开有奖的界面，没有别的内容，我们在ida里搜索到了这样的几个线索：</p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-01.png"></p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-02.png"></p>
+<p>Bcd。。。。。。最后是+&#x2F;&#x3D;，怀疑是base64，不过少了一个a，双击进去就可以看见其实是没缺的，摁a就可以看见</p>
+<p>U g3t 1T，应该是得到flag的证明，交叉引用找到主要的函数</p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-03.png"></p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-04.png"></p>
+<p>我们找到了在哪里运用了base64，看见这里有运用标准表</p>
+<p>做好标注之后来观察主要的函数</p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-05.png"></p>
+<p>可以看到要想输出U g3t 1T字符串，就要满足以上的条件，上面已经有了一串的初始化了</p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-06.png"></p>
+<p>所以可以先进行运算</p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-07.png"></p>
+<p>String是依靠这些初始化来进行的，他们经历了一个函数，是一个排序</p>
+<p><img src="/img/gua-kai-you-jiang/gua-kai-you-jiang-08.png"></p>
+<p>从小到大地把这些初始化进行排序过后，把部分的string进行了base64</p>
+<p>最后按照判断的条件倒回去进行解码就可以得到flag</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/05/17/gua-kai-you-jiang/">https://fengjinghua69.github.io/2026/05/17/gua-kai-you-jiang/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/Base64/">Base64</a><a class="post-meta__tags" href="/tags/%E5%88%AE%E5%BC%80%E6%9C%89%E5%A5%96/">刮开有奖</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/05/17/java-ni-xiang/" title="java逆向"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">java逆向</div></div><div class="info-2"><div class="info-item-1"> 题目是要求输入字符串经历变换之后与key进行比较， 变换如下：（c+“@”）^32，然后整个流程就是（c+64）^32&#x3D;key[i] 而要得到c，就是(key[i]^32)-64  </div></div></div></a><a class="pagination-related" href="/2026/05/17/findit/" title="findit"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">findit</div></div><div class="info-2"><div class="info-item-1">解压得到一个apk，放到jadx，发现给出了两个字符串，a之后分情况赋值给x，转换成string类型给m，同样的b之后分情况赋给了y然后转换类型给了n  中间把输入与m进行对比之后，若正确则返回n，只要按照要求执行一遍得到n即可 得到flag </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/06/ni-hao-sao-a/" title="[NPUCTF2020]你好sao啊"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-06</div><div class="info-item-2">[NPUCTF2020]你好sao啊</div></div><div class="info-2"><div class="info-item-1">   Ida里面就能搜到我们看见的字符串  s是输出，把s送到RxEncode函数做变换，得到s1，s1&#x3D;s2且s长度为32就是对的，我们有s2，要把s2倒回去，得到flag   这是个base64解码，表变了，s2&#x3D;9E 9B 9C B5 FE 70 D3 0F B2 D1 4F 9C 02 7F AB DE 59 65 63 E7 40 9D CD FA 04  </div></div></div></a><a class="pagination-related" href="/2026/08/31/tryre/" title="tryre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-31</div><div class="info-item-2">tryre</div></div><div class="info-2"><div class="info-item-1"> 无壳，exe  字符串有正确错误的提醒，还有个表 运行让输入内容   跟踪进去之后有让输入的地方  循环之后的一个判断是i&#x3D;&#x3D;44，我猜测是你输入的长度必须要满足44才能执行后续的内容 下面的循环里就用到了我们之前在字符串里面找到的表  里面的v10，v6什么的是用来给表的索引，然后[]里面的左移2我一开始不知道是什么用法，后来才明白是要把8位拆开成6位，而后面的也是，把两个字节的部分拼接起来，而*4在汇编里见过，他也就相当于一个左移，也是在拼接数字。 每次循环，v10、v11、v14 取到的正好是输入字符串中的 连续 3 个字节 v9 &#x3D; v5+2 → v9+&#x3D;4 变成 v5+6。写入 (v9-6) &#x3D; v5[0] 所以我们可以发现每次循环正好连续写入 4 个字节刚好填满整个v5，这段是最猎奇的，看半天。 1v8 = v5;并且v8[59] = 61;这个61就是=   这里呢就是在对v5进行异或，全都^2了 1LOBYTE(v9) = 0;  这个东西我去查是去掉后面的两位换成了0。  这段判断总体就是让v8，也就是v5里面...</div></div></div></a><a class="pagination-related" href="/2026/08/03/check-1n/" title="check_1n"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-03</div><div class="info-item-2">check_1n</div></div><div class="info-2"><div class="info-item-1">运行之后有如下提示  摁下空格之后出现如下界面。摁下上下左右键即可操控图示键盘   无壳，放进ida搜字符串   发现有密码错误的提示，跟进去发现密码是hello world   Base64解密让我们去玩打砖块，玩完就是flag </div></div></div></a><a class="pagination-related" href="/2026/07/25/level3/" title="[WUSTCTF2020]level3"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-25</div><div class="info-item-2">[WUSTCTF2020]level3</div></div><div class="info-2"><div class="info-item-1">.ELF文件，没壳  放进ida能看见很多字符串：  点进去看之后 大概是如下：   我们输入内容，然后用时间当成种子生成随机数，奇数偶数两个分支，一个是用一下base64，没什么判断，没用，另一个是给我们一串字符串，我们检查这个base64是正常的  但是解出来是乱七八糟的不对，之后卡在这里了，偶然交叉引用base64表发现了这个函数 改变了表，然后我去看这个函数，他是在init函数调用的，我查到这个函数是初始化，在main之前     用改完的表来看：  </div></div></div></a><a class="pagination-related" href="/2026/08/07/guessgame/" title="guessgame"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-07</div><div class="info-item-2">guessgame</div></div><div class="info-2"><div class="info-item-1">运行时有如下选项   放进ida一查字符串答案就出来了 </div></div></div></a><a class="pagination-related" href="/2026/05/17/pyre/" title="[GWCTF 2019]pyre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">[GWCTF 2019]pyre</div></div><div class="info-2"><div class="info-item-1">用pycdc反编译得到flag  我们输入内容之后，累加再把他们进行异或  末尾值直接还原，然后从后往前异或 123a[l-1] = b[l-1]for i from l-2 down to 0:    a[i] = b[i] ^ a[i+1]  得到flag </div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/09/PE-DOS/" title="PE-DOS">PE-DOS</a><time datetime="2026-11-09T06:30:36.000Z" title="发表于 2026-11-09 14:30:36">2026-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/flower/" title="flower">flower</a><time datetime="2026-11-08T07:48:24.000Z" title="发表于 2026-11-08 15:48:24">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Obfuscation/" title="Obfuscation">Obfuscation</a><time datetime="2026-11-08T07:48:07.000Z" title="发表于 2026-11-08 15:48:07">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Anti-debugging/" title="Anti-debugging">Anti-debugging</a><time datetime="2026-11-08T07:47:18.000Z" title="发表于 2026-11-08 15:47:18">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/the-Usage-Cheat-Engine/" title="the Usage Cheat Engine">the Usage Cheat Engine</a><time datetime="2026-11-08T07:46:24.000Z" title="发表于 2026-11-08 15:46:24">2026-11-08</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

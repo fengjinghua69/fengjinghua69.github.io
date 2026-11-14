@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>[ACTF新生赛2020]easyre | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="得到一个tar文件，拿7z解压后得到了一个exe文件，运行之后让我们输入内容 放到ida里什么也没有，用upx查壳发现有壳，脱壳后再放入ida里有了线索  吸取了之前的教训，看声明之后的提示，我知道从input[0]到v10都是输入的内容，上面的判断内容给出了我们外壳，然后把内里存进v5之后，进行了如下判断 data_start[V5的每一项减一]是否等于v4的第i项。  我们双击能够找到_da">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[ACTF新生赛2020]easyre">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/05/17/easyre/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="得到一个tar文件，拿7z解压后得到了一个exe文件，运行之后让我们输入内容 放到ida里什么也没有，用upx查壳发现有壳，脱壳后再放入ida里有了线索  吸取了之前的教训，看声明之后的提示，我知道从input[0]到v10都是输入的内容，上面的判断内容给出了我们外壳，然后把内里存进v5之后，进行了如下判断 data_start[V5的每一项减一]是否等于v4的第i项。  我们双击能够找到_da">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-05-17T10:34:27.000Z">
+<meta property="article:modified_time" content="2026-11-07T09:30:31.662Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="ACTF新生赛2020">
+<meta property="article:tag" content="UPX">
+<meta property="article:tag" content="easyre">
+<meta property="article:tag" content="脱壳">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "[ACTF新生赛2020]easyre",
+  "url": "https://fengjinghua69.github.io/2026/05/17/easyre/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-05-17T10:34:27.000Z",
+  "dateModified": "2026-11-07T09:30:31.662Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/05/17/easyre/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '[ACTF新生赛2020]easyre',
+  isHighlightShrink: true,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">[ACTF新生赛2020]easyre</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">[ACTF新生赛2020]easyre</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-17T10:34:27.000Z" title="发表于 2026-05-17 18:34:27">2026-05-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-07T09:30:31.662Z" title="更新于 2026-11-07 17:30:31">2026-11-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/">CTF</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><img src="/img/easyre/easyre-01.png"></p>
+<p>得到一个tar文件，拿7z解压后得到了一个exe文件，运行之后让我们输入内容</p>
+<p>放到ida里什么也没有，用upx查壳发现有壳，脱壳后再放入ida里有了线索</p>
+<p><img src="/img/easyre/easyre-02.png"></p>
+<p>吸取了之前的教训，看声明之后的提示，我知道从input[0]到v10都是输入的内容，上面的判断内容给出了我们外壳，然后把内里存进v5之后，进行了如下判断</p>
+<p><em>data_start</em>[V5的每一项减一]是否等于v4的第i项。</p>
+<p><img src="/img/easyre/easyre-03.png"></p>
+<p>我们双击能够找到_data_start_</p>
+<p>所以要得到v5，我们需要找到v4对应的datastart的项数，加一减i</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data_start = <span class="string">&#x27;~&#125;|&#123;zyxwvutsrqponmlkjihgfedcba`_^]\\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?&gt;=&lt;;:9876543210/.-,+*)(\x27&amp;%$# !&quot;&#x27;</span></span><br><span class="line">v4 = <span class="string">&quot;*F&#x27;\&quot;N,\&quot;(I?+@&quot;</span></span><br><span class="line"></span><br><span class="line">flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">for</span> c <span class="keyword">in</span> v4:</span><br><span class="line">    idx = data_start.find(c)</span><br><span class="line">    flag += <span class="built_in">chr</span>(idx + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;ACTF&#123;&#x27;</span> + flag + <span class="string">&#x27;&#125;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/05/17/easyre/">https://fengjinghua69.github.io/2026/05/17/easyre/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/ACTF%E6%96%B0%E7%94%9F%E8%B5%9B2020/">ACTF新生赛2020</a><a class="post-meta__tags" href="/tags/easyre/">easyre</a><a class="post-meta__tags" href="/tags/UPX/">UPX</a><a class="post-meta__tags" href="/tags/%E8%84%B1%E5%A3%B3/">脱壳</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/05/17/bu-yi-yang-de-flag-chong-zuo/" title="不一样的flag（重做）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">不一样的flag（重做）</div></div><div class="info-2"><div class="info-item-1">知道这是一道迷宫图之后，来吧他的判断条件具体到迷宫怎么走上  看最后的判断公式能看出很多线索： 1234567   if ( v7[5 * *(_DWORD *)&amp;v3[25] - 41 + v4] == 49 )      exit(1);    if ( v7[5 * *(_DWORD *)&amp;v3[25] - 41 + v4] == 35 )    &#123;      puts(&quot;\nok, the order you enter is the flag!&quot;);      exit(0);&#125;  等于1时退出，等于#时成功 V3[25]算是y轴，因为乘五了，所以也可以推断出一行有五个，而v4算是x轴，程序把x,y的信息存放在这两个变量里 所以已经可以把这个地图画出来 123451 1 1 10 1 0 0 00 1 0 1 00 0 0 1 01 1 1 1 #  所以可以根据这个地图得到flag了。 222441144222 </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/07/19/re/" title="RE"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-19</div><div class="info-item-2">RE</div></div><div class="info-2"><div class="info-item-1"> 得到的ELF文件放进虚拟机里面会出现 放进ida里却没有相应的字符串，用DIE观察：  是upx壳，我用虚拟机里的upx脱壳之后得到脱壳后的re_unpacked 放进ida里面：   大概内容就是输入v11然后与a1进行对比所以a1就是我们想得到的flag。 </div></div></div></a><a class="pagination-related" href="/2026/05/17/rome/" title="[ACTF新生赛2020]rome"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">[ACTF新生赛2020]rome</div></div><div class="info-2"><div class="info-item-1">  搜索字符串发现了正确的提示，点进去查看代码 输入内容后经历判断，点击后面的v6v7之类的变量，发现他们就是连续的我们输入的内容  上面的判断是确定外壳是ACTF{}  之后把内里的内容赋给v1，判断大小值进行变换  之后再把新的v1和text进行判断 所以把text倒回去就可以得到flag  </div></div></div></a><a class="pagination-related" href="/2026/10/31/ez-upx3-0/" title="ez_upx3.0"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-31</div><div class="info-item-2">ez_upx3.0</div></div><div class="info-2"><div class="info-item-1"> 现在我已经彻底掌握手脱upx了，这里展示另一个！也就是esp的方法，找pushad的方法，原理就是利用它保存寄存器之后一定要把数据pop出来的，在x32时候比较好用，因为pushad很明显！ 往下运行一步，就被存入栈之中   把它复制，在内存窗口下上硬件断点，   F9运行之后它命中了，但是在一个循环里，f4跳出来就好  这个大跳转跳过去就能看出来，我们找到oep了，后面dump一下就好了  </div></div></div></a><a class="pagination-related" href="/2026/10/31/ez-upx2-0/" title="ez_upx2.0"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-31</div><div class="info-item-2">ez_upx2.0</div></div><div class="info-2"><div class="info-item-1"> 现在我已经彻底掌握手脱upx了，这里展示其中一个，放进ida里看，这个题很明显，只要查看f5就可以找到oep，jumpout是一个明显的信号！   Copy过去 找调用它的地方就好了，因为我们是要在跳转过来的地方断一下来判断一下   果然是有一个大跳转！，那就没找错，在这里下一个断点运行一下看一下，记住刚刚4014E0的地方的样子  我们下好断点调过来看一下，原本空的地方有数据了。那就对了，我们在x64看一下，在这个数据的地方等着，运行运行，等壳跑完。 那就简单了，用Scylla dump掉就好。这是其中一个办法。 </div></div></div></a><a class="pagination-related" href="/2026/05/17/pyre/" title="[GWCTF 2019]pyre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">[GWCTF 2019]pyre</div></div><div class="info-2"><div class="info-item-1">用pycdc反编译得到flag  我们输入内容之后，累加再把他们进行异或  末尾值直接还原，然后从后往前异或 123a[l-1] = b[l-1]for i from l-2 down to 0:    a[i] = b[i] ^ a[i+1]  得到flag </div></div></div></a><a class="pagination-related" href="/2026/05/29/level1/" title="[WUSTCTF2020]level1"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-29</div><div class="info-item-2">[WUSTCTF2020]level1</div></div><div class="info-2"><div class="info-item-1">放到ida里找到主函数观察代码  查资料知道v7 &#x3D;__readfsqword(0x28u); 是一个栈保护，先略过 后面打开了一个flag文件，然后赋值给了ptr，之后经历一个循环，用(i &amp; 1) !&#x3D; 0判断了奇偶，然后如果是奇数则把当前位左移i位，如果是偶数就进行相乘。 所以我们先得到ptr，他给我们了一个output.txt就是我们要用的输出，反过来的逻辑就是，把i是奇数的时候的项右移i位，i是偶数的时候项是除i 123456789101112131415161718192021#include &lt;iostream&gt;#include &lt;vector&gt;using namespace std;int main() &#123;    vector&lt;long long&gt; out = &#123;        198,232,816,200,1536,300,6144,984,        51200,570,92160,1200,565248,756,1474560,        800,6291456,1...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/09/PE-DOS/" title="PE-DOS">PE-DOS</a><time datetime="2026-11-09T06:30:36.000Z" title="发表于 2026-11-09 14:30:36">2026-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/flower/" title="flower">flower</a><time datetime="2026-11-08T07:48:24.000Z" title="发表于 2026-11-08 15:48:24">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Obfuscation/" title="Obfuscation">Obfuscation</a><time datetime="2026-11-08T07:48:07.000Z" title="发表于 2026-11-08 15:48:07">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Anti-debugging/" title="Anti-debugging">Anti-debugging</a><time datetime="2026-11-08T07:47:18.000Z" title="发表于 2026-11-08 15:47:18">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/the-Usage-Cheat-Engine/" title="the Usage Cheat Engine">the Usage Cheat Engine</a><time datetime="2026-11-08T07:46:24.000Z" title="发表于 2026-11-08 15:46:24">2026-11-08</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

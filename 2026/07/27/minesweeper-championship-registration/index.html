@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>[FlareOn5]Minesweeper Championship Registration | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一道很简单的题，得到的JAR文件打开是让输入内容 然后放进jadx里面查看能看见如下代码  给出的网址就是flag">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[FlareOn5]Minesweeper Championship Registration">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/07/27/minesweeper-championship-registration/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="一道很简单的题，得到的JAR文件打开是让输入内容 然后放进jadx里面查看能看见如下代码  给出的网址就是flag">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-07-26T23:36:11.000Z">
+<meta property="article:modified_time" content="2026-11-07T09:30:31.719Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="FlareOn5">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Minesweeper Championship Registration">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "[FlareOn5]Minesweeper Championship Registration",
+  "url": "https://fengjinghua69.github.io/2026/07/27/minesweeper-championship-registration/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-07-26T23:36:11.000Z",
+  "dateModified": "2026-11-07T09:30:31.719Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/07/27/minesweeper-championship-registration/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '[FlareOn5]Minesweeper Championship Registration',
+  isHighlightShrink: true,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">[FlareOn5]Minesweeper Championship Registration</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">[FlareOn5]Minesweeper Championship Registration</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-26T23:36:11.000Z" title="发表于 2026-07-27 07:36:11">2026-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-07T09:30:31.719Z" title="更新于 2026-11-07 17:30:31">2026-11-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/">CTF</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><img src="/img/minesweeper-championship-registration/minesweeper-championship-registration-01.png"></p>
+<p>一道很简单的题，得到的JAR文件打开是让输入内容</p>
+<p>然后放进jadx里面查看能看见如下代码</p>
+<p><img src="/img/minesweeper-championship-registration/minesweeper-championship-registration-02.png"></p>
+<p>给出的网址就是flag</p>
+<p><img src="/img/minesweeper-championship-registration/minesweeper-championship-registration-03.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/07/27/minesweeper-championship-registration/">https://fengjinghua69.github.io/2026/07/27/minesweeper-championship-registration/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/FlareOn5/">FlareOn5</a><a class="post-meta__tags" href="/tags/Minesweeper-Championship-Registration/">Minesweeper Championship Registration</a><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/07/29/csre/" title="CSre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">CSre</div></div><div class="info-2"><div class="info-item-1"> 运行的时候会报错 放进ida里面看是一堆乱码，且搜索字符串也什么都没有   应该是加密了字符串？   经过搜索.NET要用dnSpy，放进去发现还是乱，应该是经过混淆，而且运行就会有异常，我想通过编辑来改掉，但是一改就有报错，改不掉，上网搜索之后知道可以用de4dot来改   这个smethod是用了SHA1，在里面解密得到flag </div></div></div></a><a class="pagination-related" href="/2026/07/26/er-cha-shu/" title="二叉树"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">二叉树</div></div><div class="info-2"><div class="info-item-1">.ELF文件，无壳   运行之后给了我一些莫名其妙的字符串，看不懂，有点像乱的flag  在ida里main函数是这样的，那两个很像flag的字符串是从type1和type2里面出来的   这两个函数的递归我一开始向量很久但是还是看不懂他是想干什么，到网上查发现是二叉树，我找教程学了学二叉树，输出在递归之中，type1是中序，输出在递归之后，type2是后序，所以我们还原二叉树，然后用前序得到flag  </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/05/17/jian-dan-zhu-ce-qi/" title="简单注册器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">简单注册器</div></div><div class="info-2"><div class="info-item-1"> 解压得到的apk文件运行之后让我们输入内容判断正误 我搜索了输入注册码错误的字符串，找到了主要的函数，  我从bbb往上追溯，这个代码的逻辑应该是给了x一段字符串，然后进行了一些变换之后，再经过循环把顺序倒过来，就是bbb了，只要得到了经过上面两个过程之后的bbb就能得到flag，按照他的代码跑一下就可以了 123456789x = list(&quot;dd2940c04462b4dd7c450528835cca15&quot;)x[2] = chr((ord(x[2]) + ord(x[3])) - 50)x[4] = chr((ord(x[2]) + ord(x[5])) - 48)x[30] = chr((ord(x[31]) + ord(x[9])) - 48)x[14] = chr((ord(x[27]) + ord(x[28])) - 97)for i in range(16):    x[i], x[31 - i] = x[31 - i], x[i]bbb = &#x27;&#x27;.join(x)print(&quot;flag&#123;&quot; + ...</div></div></div></a><a class="pagination-related" href="/2026/05/17/findit/" title="findit"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">findit</div></div><div class="info-2"><div class="info-item-1">解压得到一个apk，放到jadx，发现给出了两个字符串，a之后分情况赋值给x，转换成string类型给m，同样的b之后分情况赋给了y然后转换类型给了n  中间把输入与m进行对比之后，若正确则返回n，只要按照要求执行一遍得到n即可 得到flag </div></div></div></a><a class="pagination-related" href="/2026/08/03/check-1n/" title="check_1n"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-03</div><div class="info-item-2">check_1n</div></div><div class="info-2"><div class="info-item-1">运行之后有如下提示  摁下空格之后出现如下界面。摁下上下左右键即可操控图示键盘   无壳，放进ida搜字符串   发现有密码错误的提示，跟进去发现密码是hello world   Base64解密让我们去玩打砖块，玩完就是flag </div></div></div></a><a class="pagination-related" href="/2026/08/12/simple-cpp/" title="[GXYCTF2019]simple CPP"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-12</div><div class="info-item-2">[GXYCTF2019]simple CPP</div></div><div class="info-2"><div class="info-item-1">  无壳，放进ida查string查到有成功的提示  有点复杂，微吓哭，我先理一下：首先我们知道了输入，成功提示。从后往前看和从输出看都扯上了很多变量，给我看了很久也没明白到底想干什么，我打算动态调试看看，虽然后面有一个反调试  但是对前面的不影响，我就先看着。后面要有影响的时候打个补丁改掉就好了   我后来在输出后面下断点，然后运行，输入了几次，我发现v44根据我输入的内容变化 如图，v44的数值就是我们输入的内容的长度，所以命名为length  if ( length - 5 &gt; ‘\x19’ )这个比较，我非常好奇为什么特意要-5，问ai得知是利用了无符号，相当于length&gt;&#x3D;5并且还要满足&lt;30,但是不知道哪这个作者到底咋想的，判断个长度竟然输出外壳不对，我当时难受半天也没看出来究竟哪里是判断了外壳对不对   这段代码一开始静态的时候完全看不懂，但是在我动态调试之后，我发现v12有了值 而这段的意思差不多可以简化成下面这样 1234for (int i = 0; i &lt; input.length(); ++i)&#123;    v8[...</div></div></div></a><a class="pagination-related" href="/2026/05/17/java-ni-xiang/" title="java逆向"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">java逆向</div></div><div class="info-2"><div class="info-item-1"> 题目是要求输入字符串经历变换之后与key进行比较， 变换如下：（c+“@”）^32，然后整个流程就是（c+64）^32&#x3D;key[i] 而要得到c，就是(key[i]^32)-64  </div></div></div></a><a class="pagination-related" href="/2026/08/29/hardcpp/" title="[SUCTF2019]hardcpp"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-29</div><div class="info-item-2">[SUCTF2019]hardcpp</div></div><div class="info-2"><div class="info-item-1">无壳，ELF文件  放进虚拟机运行是这样的   字符串里面有一些线索 用d810插件之后变成了简单的函数     因为v18-v25&gt;0就要退出，而v25在前，v18在后，所以肯定是会大于0的，所以肯定会退出，不过现在可以直接看， 推导出来公式是enc[i-1] &#x3D; ( ( ( (S + t + i - 1) ^ 18 ) * 3 ) + 2 ) ^ ( ( t ^ input[i-1] ) + ( (S + t + i - 1) % 7 ) ) t&#x3D;0就忽略掉，然后s是有&amp;的，也就是地址，把我们输入的内容当初flag字符串，哪就变成了 12for(int i=0; i&lt;20; i++)enc[i] = (((flag[i]^18)*3+2)) ^ (flag[i+1] + (flag[i]%7));  把这个等式反过来看，把 flag[i+1] 单独拎出来（等式右边只有它是未知的，enc 和 flag[i] 都是已知）： 1flag[i+1] = (enc[i] ^ (((flag[i] ^ 18) * 3 + 2))) - flag[i...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/09/PE-DOS/" title="PE-DOS">PE-DOS</a><time datetime="2026-11-09T06:30:36.000Z" title="发表于 2026-11-09 14:30:36">2026-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/flower/" title="flower">flower</a><time datetime="2026-11-08T07:48:24.000Z" title="发表于 2026-11-08 15:48:24">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Obfuscation/" title="Obfuscation">Obfuscation</a><time datetime="2026-11-08T07:48:07.000Z" title="发表于 2026-11-08 15:48:07">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Anti-debugging/" title="Anti-debugging">Anti-debugging</a><time datetime="2026-11-08T07:47:18.000Z" title="发表于 2026-11-08 15:47:18">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/the-Usage-Cheat-Engine/" title="the Usage Cheat Engine">the Usage Cheat Engine</a><time datetime="2026-11-08T07:46:24.000Z" title="发表于 2026-11-08 15:46:24">2026-11-08</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>

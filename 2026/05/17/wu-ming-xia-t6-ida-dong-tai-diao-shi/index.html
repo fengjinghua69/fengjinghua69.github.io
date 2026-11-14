@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>无名侠T6-ida动态调试 | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1234567891011121314151617int __cdecl main_0(int argc, const char argv, const char envp)&#123;  size_t i; &#x2F;&#x2F; [esp+190h] [ebp-340h]  char input[264]; &#x2F;&#x2F; [esp+3A4h] [ebp-12Ch] BYREF  char str[32]; &#x2F;&#x2F; [es">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无名侠T6-ida动态调试">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/05/17/wu-ming-xia-t6-ida-dong-tai-diao-shi/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="1234567891011121314151617int __cdecl main_0(int argc, const char argv, const char envp)&#123;  size_t i; &#x2F;&#x2F; [esp+190h] [ebp-340h]  char input[264]; &#x2F;&#x2F; [esp+3A4h] [ebp-12Ch] BYREF  char str[32]; &#x2F;&#x2F; [es">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-05-17T10:34:27.000Z">
+<meta property="article:modified_time" content="2026-11-07T09:30:32.161Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="动态调试">
+<meta property="article:tag" content="异或">
+<meta property="article:tag" content="无名侠T6-ida动态调试">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "无名侠T6-ida动态调试",
+  "url": "https://fengjinghua69.github.io/2026/05/17/wu-ming-xia-t6-ida-dong-tai-diao-shi/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-05-17T10:34:27.000Z",
+  "dateModified": "2026-11-07T09:30:32.161Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/05/17/wu-ming-xia-t6-ida-dong-tai-diao-shi/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '无名侠T6-ida动态调试',
+  isHighlightShrink: true,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">无名侠T6-ida动态调试</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">无名侠T6-ida动态调试</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-17T10:34:27.000Z" title="发表于 2026-05-17 18:34:27">2026-05-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-07T09:30:32.161Z" title="更新于 2026-11-07 17:30:32">2026-11-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/">CTF</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">main_0</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> argv, <span class="type">const</span> <span class="type">char</span> envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">size_t</span> i; <span class="comment">// [esp+190h] [ebp-340h]</span></span><br><span class="line">  <span class="type">char</span> input[<span class="number">264</span>]; <span class="comment">// [esp+3A4h] [ebp-12Ch] BYREF</span></span><br><span class="line">  <span class="type">char</span> str[<span class="number">32</span>]; <span class="comment">// [esp+4ACh] [ebp-24h] BYREF</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">qmemcpy</span>(str, &amp;aGoNzIxrbxrfojE, <span class="number">0x1Cu</span>);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;[6] Hi CTFer,Input your flag:&quot;</span>);</span><br><span class="line">  <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, input);</span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; <span class="built_in">j__strlen</span>(str); ++i )</span><br><span class="line">    str[i] = ((i + <span class="number">1</span>) ^ str[i]) - i;</span><br><span class="line">  <span class="keyword">if</span> ( !<span class="built_in">j__strcmp</span>(str, input) )</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;you are right\n&quot;</span>);</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;you are wrong\n&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们输入一个字符串，然后与str做了一些变换之后的字符串进行对比，得到正确或错误，所以flag就是得到str进行了变换之后的字符串是什么</p>
+<p>我们找到str：‘Go&#96;nz_ixrbXRfoJ~EDG|NbL@rh’</p>
+<p>而他经过了如下变换：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for ( i = 0; i &lt; j__strlen(str); ++i )</span><br><span class="line">    str[i] = ((i + 1) ^ str[i]) - i;</span><br></pre></td></tr></table></figure>
+
+<p>他让每一位的str都和i+1进行了一次异或之后再加i</p>
+<p>我们可以通过写脚本来把他倒回去</p>
+<p>但是动态调试更快</p>
+<p><img src="/img/wu-ming-xia-t6-ida-dong-tai-diao-shi/wu-ming-xia-t6-ida-dong-tai-diao-shi-01.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flag&#123;This_IS_T7_DEBUG_EASY&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/05/17/wu-ming-xia-t6-ida-dong-tai-diao-shi/">https://fengjinghua69.github.io/2026/05/17/wu-ming-xia-t6-ida-dong-tai-diao-shi/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/">动态调试</a><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/%E5%BC%82%E6%88%96/">异或</a><a class="post-meta__tags" href="/tags/%E6%97%A0%E5%90%8D%E4%BE%A0T6-ida%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/">无名侠T6-ida动态调试</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/05/17/rome/" title="[ACTF新生赛2020]rome"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">[ACTF新生赛2020]rome</div></div><div class="info-2"><div class="info-item-1">  搜索字符串发现了正确的提示，点进去查看代码 输入内容后经历判断，点击后面的v6v7之类的变量，发现他们就是连续的我们输入的内容  上面的判断是确定外壳是ACTF{}  之后把内里的内容赋给v1，判断大小值进行变换  之后再把新的v1和text进行判断 所以把text倒回去就可以得到flag  </div></div></div></a><a class="pagination-related" href="/2026/05/17/pyre/" title="[GWCTF 2019]pyre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">[GWCTF 2019]pyre</div></div><div class="info-2"><div class="info-item-1">用pycdc反编译得到flag  我们输入内容之后，累加再把他们进行异或  末尾值直接还原，然后从后往前异或 123a[l-1] = b[l-1]for i from l-2 down to 0:    a[i] = b[i] ^ a[i+1]  得到flag </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/12/simple-cpp/" title="[GXYCTF2019]simple CPP"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-12</div><div class="info-item-2">[GXYCTF2019]simple CPP</div></div><div class="info-2"><div class="info-item-1">  无壳，放进ida查string查到有成功的提示  有点复杂，微吓哭，我先理一下：首先我们知道了输入，成功提示。从后往前看和从输出看都扯上了很多变量，给我看了很久也没明白到底想干什么，我打算动态调试看看，虽然后面有一个反调试  但是对前面的不影响，我就先看着。后面要有影响的时候打个补丁改掉就好了   我后来在输出后面下断点，然后运行，输入了几次，我发现v44根据我输入的内容变化 如图，v44的数值就是我们输入的内容的长度，所以命名为length  if ( length - 5 &gt; ‘\x19’ )这个比较，我非常好奇为什么特意要-5，问ai得知是利用了无符号，相当于length&gt;&#x3D;5并且还要满足&lt;30,但是不知道哪这个作者到底咋想的，判断个长度竟然输出外壳不对，我当时难受半天也没看出来究竟哪里是判断了外壳对不对   这段代码一开始静态的时候完全看不懂，但是在我动态调试之后，我发现v12有了值 而这段的意思差不多可以简化成下面这样 1234for (int i = 0; i &lt; input.length(); ++i)&#123;    v8[...</div></div></div></a><a class="pagination-related" href="/2026/08/31/tryre/" title="tryre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-31</div><div class="info-item-2">tryre</div></div><div class="info-2"><div class="info-item-1"> 无壳，exe  字符串有正确错误的提醒，还有个表 运行让输入内容   跟踪进去之后有让输入的地方  循环之后的一个判断是i&#x3D;&#x3D;44，我猜测是你输入的长度必须要满足44才能执行后续的内容 下面的循环里就用到了我们之前在字符串里面找到的表  里面的v10，v6什么的是用来给表的索引，然后[]里面的左移2我一开始不知道是什么用法，后来才明白是要把8位拆开成6位，而后面的也是，把两个字节的部分拼接起来，而*4在汇编里见过，他也就相当于一个左移，也是在拼接数字。 每次循环，v10、v11、v14 取到的正好是输入字符串中的 连续 3 个字节 v9 &#x3D; v5+2 → v9+&#x3D;4 变成 v5+6。写入 (v9-6) &#x3D; v5[0] 所以我们可以发现每次循环正好连续写入 4 个字节刚好填满整个v5，这段是最猎奇的，看半天。 1v8 = v5;并且v8[59] = 61;这个61就是=   这里呢就是在对v5进行异或，全都^2了 1LOBYTE(v9) = 0;  这个东西我去查是去掉后面的两位换成了0。  这段判断总体就是让v8，也就是v5里面...</div></div></div></a><a class="pagination-related" href="/2026/11/03/joker-smc/" title="joker_SMC"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-03</div><div class="info-item-2">joker_SMC</div></div><div class="info-2"><div class="info-item-1"> 搜字符串能搜到输入 能看到他使用了VirtualProtect，说明是个smc，他改变了权限。  后面的逻辑很清晰，输入一个24长度的东西，不符合就退出来，然后还要字符串，之后执行两个函数，一个wrong，一个sub_401641  这个函数是输入的内容进行变换 &amp;是按位与，(i &amp; 1) !&#x3D; 0可以用来判断奇偶 1 &amp; 1 &#x3D; 1 1 &amp; 0 &#x3D; 0 0 &amp; 1 &#x3D; 0 0 &amp; 0 &#x3D; 0 如果最低位是 1，结果为 1（非零），条件成立 → i 是奇数。 如果最低位是 0，结果为 0，条件不成立 → i 是偶数。 所以这个地方是奇数的，-&#x3D;i，是偶数的，^&#x3D;i. 就是给str变换了一下。  进行一个判断，与unk_4030C0里的内容进行对比，错误输出错误，正确输出hahaha，但是并没有结束，这个flag交上去含义是一个滚木，假的。 主要是看下面的   这就是smc在解密，在调用的时候断下来，看下面的判断，如果不对的话就结束，正确的话进入sub_40159...</div></div></div></a><a class="pagination-related" href="/2026/10/22/de-zhou-pu-ke/" title="德州扑克"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-22</div><div class="info-item-2">德州扑克</div></div><div class="info-2"><div class="info-item-1">根据nc 10.110.0.43 57982的反馈搜的字符串capsule，能找到相关的代码 解胶囊  1sub_140089810 返回字节数   密钥生成 公式大概是key&#x3D;dword_140190F30[i]^ sub_14008A360（(unsigned int)(dword_1401C9010[i] ^ dword_1401C9000[i]), 1a2: dword_140190F20[i]）   1(x, n) = (x &lt;&lt; (n &amp; 31)) | (x &gt;&gt; ((32 - n) &amp; 31))   大概是这样而俩表都是0  这个是解密hex用的，用来得到seed，这段接受之前结出来的key和capsule的hex，解成明文，把他抄下来照着就能得出seed啊，五个人的牌，剩下的42张 两个数组一会得到key的 把给出的字符抄出来做个异或能得到key 1234key[0] = 0xA56BABCDkey[1] = 0x13579BDFkey[2] = 0xC0DEC0DEkey[3] = 0x9E3779B9  然后是...</div></div></div></a><a class="pagination-related" href="/2026/05/17/pyre/" title="[GWCTF 2019]pyre"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-17</div><div class="info-item-2">[GWCTF 2019]pyre</div></div><div class="info-2"><div class="info-item-1">用pycdc反编译得到flag  我们输入内容之后，累加再把他们进行异或  末尾值直接还原，然后从后往前异或 123a[l-1] = b[l-1]for i from l-2 down to 0:    a[i] = b[i] ^ a[i+1]  得到flag </div></div></div></a><a class="pagination-related" href="/2026/11/08/Anti-debugging/" title="Anti-debugging"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-08</div><div class="info-item-2">Anti-debugging</div></div><div class="info-2"><div class="info-item-1">第一课：认识反调试反调试 &#x3D; 程序不想让你用调试器分析它，所以设置了各种”陷阱”来检测你有没有在调试。  花指令 &#x3D; 房间里故意堆满垃圾，让你看不清路（干扰静态分析，你之前学过） 反调试 &#x3D; 房间里装了摄像头和警报器，一旦发现你（调试器），就锁门或自毁（干扰动态分析）     方式 通俗解释 例子    查内存 翻自己的”档案”，看有没有被调试器动过手脚 看 BeingDebugged 标志   设陷阱 故意做一件会触发警报的事，看有没有人处理 故意触发异常，看调试器是否拦截   第二课：API 反调试 — IsDebuggerPresent一句话程序直接打电话给操作系统：”帮我查一下，有没有人在调试我？” 具体过程1234// 程序里的代码if (IsDebuggerPresent()) &#123;    // ← 打电话问系统    exit(1);                   // ← 有调试器？退出！&#125;  这个电话打给谁？ 打给 kernel32.dll（Windows 的一个系统文件） 具体打给里面的 IsDebugge...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/09/PE-DOS/" title="PE-DOS">PE-DOS</a><time datetime="2026-11-09T06:30:36.000Z" title="发表于 2026-11-09 14:30:36">2026-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/flower/" title="flower">flower</a><time datetime="2026-11-08T07:48:24.000Z" title="发表于 2026-11-08 15:48:24">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Obfuscation/" title="Obfuscation">Obfuscation</a><time datetime="2026-11-08T07:48:07.000Z" title="发表于 2026-11-08 15:48:07">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/Anti-debugging/" title="Anti-debugging">Anti-debugging</a><time datetime="2026-11-08T07:47:18.000Z" title="发表于 2026-11-08 15:47:18">2026-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/08/the-Usage-Cheat-Engine/" title="the Usage Cheat Engine">the Usage Cheat Engine</a><time datetime="2026-11-08T07:46:24.000Z" title="发表于 2026-11-08 15:46:24">2026-11-08</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>
