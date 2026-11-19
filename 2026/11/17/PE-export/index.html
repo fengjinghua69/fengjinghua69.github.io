@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>PE-export | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="之前在可选PE头中，有两个个字段：NumberOfRvaAndSize、DataDirectories。  前者表示了数字目录表的个数，而后者是一个数组，其中每个元素存着数字目录表的偏移的大小。 RVA:内存中的偏移。FOA:文件中的偏移。 我们利用其中的VirtualAddress来定位，这就是数据目录表的RVA，用它，转化为FOA，用FOA+Filebuffer来寻找数据目录表，而数据目录表在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PE-export">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/11/17/PE-export/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="之前在可选PE头中，有两个个字段：NumberOfRvaAndSize、DataDirectories。  前者表示了数字目录表的个数，而后者是一个数组，其中每个元素存着数字目录表的偏移的大小。 RVA:内存中的偏移。FOA:文件中的偏移。 我们利用其中的VirtualAddress来定位，这就是数据目录表的RVA，用它，转化为FOA，用FOA+Filebuffer来寻找数据目录表，而数据目录表在">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-11-17T12:48:46.000Z">
+<meta property="article:modified_time" content="2026-11-19T15:05:13.172Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="PE文件解析 - 导出表">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "PE-export",
+  "url": "https://fengjinghua69.github.io/2026/11/17/PE-export/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-11-17T12:48:46.000Z",
+  "dateModified": "2026-11-19T15:05:13.172Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/11/17/PE-export/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'PE-export',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">43</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">68</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">PE-export</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">PE-export</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-17T12:48:46.000Z" title="发表于 2026-11-17 20:48:46">2026-11-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-19T15:05:13.172Z" title="更新于 2026-11-19 23:05:13">2026-11-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>之前在可选PE头中，有两个个字段：<code>NumberOfRvaAndSize</code>、<code>DataDirectories</code>。</p>
+<p><img src="/img/PE-explore/1.png" alt="展示"></p>
+<p>前者表示了数字目录表的个数，而后者是一个数组，其中每个元素存着数字目录表的偏移的大小。</p>
+<p>RVA:内存中的偏移。FOA:文件中的偏移。</p>
+<p>我们利用其中的VirtualAddress来定位，这就是数据目录表的RVA，用它，转化为FOA，用FOA+Filebuffer来寻找数据目录表，而数据目录表在数据段。<br>所以寻找数据目录表的整体思路就是<strong>可选PE头-&gt;<code>NumberOfRvaAndSize</code>、<code>DataDirectories</code>-&gt;数据目录表偏移-&gt;数据段的数据目录表</strong>。</p>
+<p>而怎么转化RVA和FOV呢？我们就要利用到区段表中的<code>VirtualAddress</code>和<code>PointerToRawData</code>，他们是区段的RVA和FOA。<br>RVA-区段的RVA&#x3D;表距离区段<em>开头</em>的距离<br>FOA-区段的FOA&#x3D;表距离区段<em>开头</em>的距离<br>∴FOA&#x3D;RVA-区段的RVA+区段的FOA<br>  RVA&#x3D;FOA-区段的FOA+区段的RVA<br>用这个方法，我们就可以找到导出表。</p>
+<h2 id="NAME"><a href="#NAME" class="headerlink" title="NAME"></a>NAME</h2><p>DLL 自身的名称字符串的 RVA,并不是直接写的名字字符串，而是指向导出表文件名的偏移，属于RVA，同样属于需要我们取手动转化为FOA的，FOA+FileBuff，得到char* name</p>
+<h2 id="Base"><a href="#Base" class="headerlink" title="Base"></a>Base</h2><p>导出函数的起始序号，序号等于表的序号+Base，详见AddressOfNameOrdinals</p>
+<h2 id="NumberOfFunction"><a href="#NumberOfFunction" class="headerlink" title="NumberOfFunction"></a>NumberOfFunction</h2><p>导出函数的数量，并不一定是准确的数量，而大致是序号的最大值-最小值+1得出的结果，但其实这样说并不准确<br>不是说 PE 解析器通过最大序号和最小序号计算 NumberOfFunctions，而是 EAT 本身有 6 个位置，Base 决定了第一个位置对应的序号。<br>另外，EAT 中可能存在值为 0 的空项，所以不能保证每个位置都对应一个有效函数。</p>
+<p><img src="/img/PE-explore/2.png" alt="案例"></p>
+<p>这个案例很清楚的展示了以上的问题，这里的NumberOfFunction并不是3而是7-2+1&#x3D;6。</p>
+<h2 id="NumberOfName"><a href="#NumberOfName" class="headerlink" title="NumberOfName"></a>NumberOfName</h2><p>以名称导出的函数个数</p>
+<p>接下来的<strong>三个表</strong>才是重中之重！导出表不是简单地把函数名称和函数地址排列在一起，而是<strong>由三个相互关联的数组组成</strong>。</p>
+<p>导出表的核心组成</p>
+<ol>
+<li>EAT — Export Address Table</li>
+</ol>
+<p>导出地址表：存储导出函数的 RVA。</p>
+<ol start="2">
+<li>ENPT — Export Name Pointer Table</li>
+</ol>
+<p>导出名称指针表：存储函数名称字符串的 RVA。</p>
+<ol start="3">
+<li>EOT — Export Ordinal Table</li>
+</ol>
+<p>导出序号表：存储名称指针表中每个名称对应的 EAT 下标。</p>
+<h2 id="AddressOfFunction"><a href="#AddressOfFunction" class="headerlink" title="AddressOfFunction"></a>AddressOfFunction</h2><p><strong>EAT</strong>  导出函数地址表，RVA，需要转成FOA。<br>EAT 里面存储的是一系列 DWORD，每个 DWORD 对应一个函数的 RVA。</p>
+<h2 id="AddressOfNames"><a href="#AddressOfNames" class="headerlink" title="AddressOfNames"></a>AddressOfNames</h2><p><strong>ENPT</strong>  导出函数名称表，同上。<br>ENPT 它存储的是一系列 DWORD，每个 DWORD 都是一个函数名称字符串的 RVA。<br><strong>ENPT 存储的不是函数名称本身，而是函数名称字符串的 RVA！</strong><br>所以需要再进行一次寻址：<br>char* name &#x3D; (char*)(base + nameRVA);<br>这里的 base 是 DLL 的实际加载基址。</p>
+<h2 id="AddressOfNameOrdinals"><a href="#AddressOfNameOrdinals" class="headerlink" title="AddressOfNameOrdinals"></a>AddressOfNameOrdinals</h2><p><strong>EOT</strong>  导出函数序号表，同上。<br>EOT  EOT 中的每个元素是一个 WORD，也就是 2 字节。记录ENPT 中某个函数名称对应 EAT 中的哪个下标。<br>而刚刚我们提到Base，我们看到的序号就是这个表的序号加上Base得到的结果。</p>
+<p>接下来是最最重要的，我们应该如何运用这三个表呢？看下图！</p>
+<p><img src="/img/PE-explore/3.png" alt="例图"></p>
+<p>我们找函数，通过两种方式:</p>
+<ol>
+<li>名称查找</li>
+</ol>
+<p>当我们通过名称查找时，就运用到ENPT，也就是AddressOfNames指向的表，例如，我们去里面找到了name6，我们就看它是第几个元素，也就是前面的“元素序号”，<br>它对应的是5，拿着这个序号去找EOT，也就是AddressOfNameOrdinals指向的表，你按照刚刚的“元素序号”5，找到它里面存的序号，也就是5对于应里面存的是谁，<br>这里对应的是6，那么我们拿着这个真正的序号取找EAT，也就是AddressOfFunction指向的表，把刚刚拿到的真正的序号当作“元素序号”去找，就能找到对应函数的偏移。</p>
+<ol start="2">
+<li>序号查找</li>
+</ol>
+<p>当我们通过序号查找的时候，把序号减去Base，得到Ordinal，再去EAT里找偏移。</p>
+<p>而在CFF里，把这三张表合并了</p>
+<p><img src="/img/PE-explore/4.png" alt="CFF"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/11/17/PE-export/">https://fengjinghua69.github.io/2026/11/17/PE-export/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/PE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-%E5%AF%BC%E5%87%BA%E8%A1%A8/">PE文件解析 - 导出表</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/11/17/PE-section/" title="PE-section"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">PE-section</div></div><div class="info-2"><div class="info-item-1">接下来介绍一下区段表，定位区段表是通过：e_lfanew+4(签名)+20(文件头)+SizeOfOptionalHeader来确定的 区段表可以说是最清晰明了的了，它整合下面所有区段的信息，包括名称，权限等等。  这份表清晰的展示了区段表里的重要信息。 Name区段名称，但与字符串不同，他不一定会以&#x2F;0结尾，所以很容易出现不能结束继续向后读的情况。 Misc.VirtualSize表示该区段在内存中的真实大小，没有对齐。 VirtualAddress区段在内存中的偏移值，加上imagebase，即可得到真正的地址。 SizeOfRawData区段在文件中对齐之后的大小 PointerToRawData区段在文件中的偏移位置，应与VirtualAddress进行区分 Characteristcs区段属性，也就是权限————是否可写，可读，可执行。 代码演示之前PE-DOS里我初步用C++来演示DOS头，后来在PE-PE中使用python演示了PE和DOS头两者的区别在于C++采用了比较规范的用Windows的库函数，用指针来进行解析，python则是暴力的进行“切取” ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">43</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">68</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NAME"><span class="toc-number">1.</span> <span class="toc-text">NAME</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Base"><span class="toc-number">2.</span> <span class="toc-text">Base</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NumberOfFunction"><span class="toc-number">3.</span> <span class="toc-text">NumberOfFunction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NumberOfName"><span class="toc-number">4.</span> <span class="toc-text">NumberOfName</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AddressOfFunction"><span class="toc-number">5.</span> <span class="toc-text">AddressOfFunction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AddressOfNames"><span class="toc-number">6.</span> <span class="toc-text">AddressOfNames</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AddressOfNameOrdinals"><span class="toc-number">7.</span> <span class="toc-text">AddressOfNameOrdinals</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/17/PE-export/" title="PE-export">PE-export</a><time datetime="2026-11-17T12:48:46.000Z" title="发表于 2026-11-17 20:48:46">2026-11-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/17/PE-section/" title="PE-section">PE-section</a><time datetime="2026-11-17T04:12:28.000Z" title="发表于 2026-11-17 12:12:28">2026-11-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/14/the-usage-of-git/" title="the-usage-of-git">the-usage-of-git</a><time datetime="2026-11-14T07:30:56.000Z" title="发表于 2026-11-14 15:30:56">2026-11-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/14/PE-PE/" title="PE-PE">PE-PE</a><time datetime="2026-11-14T07:28:45.000Z" title="发表于 2026-11-14 15:28:45">2026-11-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/09/PE-DOS/" title="PE-DOS">PE-DOS</a><time datetime="2026-11-09T06:30:36.000Z" title="发表于 2026-11-09 14:30:36">2026-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>
