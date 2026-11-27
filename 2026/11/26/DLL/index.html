@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DLL | JackHare'blogs</title><meta name="author" content="JackHare（风景画）"><meta name="copyright" content="JackHare（风景画）"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="DLL，动态链接库，他包含了很多共用的代码和数据等等，可供其他模块使用而DLL里并不是所有的函数都必须供其他模块使用，而是只有经过导出的函数才能被其他模块使用。 DLL的意义就是，如果一份代码简单的附加到调用的程序里，就是两份代码。而使用DLL文件，物理内存中只有一份代码，不过是被分别映射到了不同的进程内存空间，从而极大地降低了内存消耗。 DllMain入口函数：DllMain函数是DLL模块的默">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DLL">
+<meta property="og:url" content="https://fengjinghua69.github.io/2026/11/26/DLL/index.html">
+<meta property="og:site_name" content="JackHare&#39;blogs">
+<meta property="og:description" content="DLL，动态链接库，他包含了很多共用的代码和数据等等，可供其他模块使用而DLL里并不是所有的函数都必须供其他模块使用，而是只有经过导出的函数才能被其他模块使用。 DLL的意义就是，如果一份代码简单的附加到调用的程序里，就是两份代码。而使用DLL文件，物理内存中只有一份代码，不过是被分别映射到了不同的进程内存空间，从而极大地降低了内存消耗。 DllMain入口函数：DllMain函数是DLL模块的默">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengjinghua69.github.io/img/JackHare.jpg">
+<meta property="article:published_time" content="2026-11-26T00:46:01.000Z">
+<meta property="article:modified_time" content="2026-11-27T09:49:07.454Z">
+<meta property="article:author" content="JackHare（风景画）">
+<meta property="article:tag" content="DLL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fengjinghua69.github.io/img/JackHare.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DLL",
+  "url": "https://fengjinghua69.github.io/2026/11/26/DLL/",
+  "image": "https://fengjinghua69.github.io/img/JackHare.jpg",
+  "datePublished": "2026-11-26T00:46:01.000Z",
+  "dateModified": "2026-11-27T09:49:07.454Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "JackHare（风景画）",
+      "url": "https://fengjinghua69.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/JH.png"><link rel="canonical" href="https://fengjinghua69.github.io/2026/11/26/DLL/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DLL',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/libs/aplayer/APlayer.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">71</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/Banner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">JackHare'blogs</span></a><a class="nav-page-title" href="/"><span class="site-name">DLL</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">DLL</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-26T00:46:01.000Z" title="发表于 2026-11-26 08:46:01">2026-11-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-27T09:49:07.454Z" title="更新于 2026-11-27 17:49:07">2026-11-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>DLL，动态链接库，他包含了很多共用的代码和数据等等，可供其他模块使用<br>而DLL里并不是所有的函数都必须供其他模块使用，而是只有经过导出的函数才能被其他模块使用。</p>
+<p>DLL的意义就是，如果一份代码简单的附加到调用的程序里，就是两份代码。而使用DLL文件，物理内存中只有一份代码，不过是被分别映射到了不同的进程内存空间，从而极大地降低了内存消耗。</p>
+<h2 id="DllMain"><a href="#DllMain" class="headerlink" title="DllMain"></a>DllMain</h2><p>入口函数：DllMain函数是DLL模块的默认入口点</p>
+<p>main 或 WinMain 对于可执行文件（EXE）通常是必需的。但是DllMain对于DLL并不是必须的。<br>Windows 加载器并不直接调用你写的 DllMain。对于一个标准的 C&#x2F;C++ DLL，链接器设置的默认入口点是 C 运行时库（CRT）提供的一个函数：_DllMainCRTStartup</p>
+<p>它的工作是先完成 CRT 自身的初始化（比如全局变量、线程局部存储等），然后它才会尝试去调用名为 DllMain 的用户函数（如果存在的话）。</p>
+<p>而如果你不提供DllMain的话，链接器会默认给你提供一个DllMain。</p>
+<p>而DllMain的意义是什么呢？当你的 DLL 需要在加载&#x2F;卸载或线程创建&#x2F;销毁时，执行自定义的初始化或清理工作时，就需要它<br>DllMain 会收到一个 fdwReason 参数，用来区分不同的调用时机：</p>
+<p>DLL_PROCESS_ATTACH：DLL 被加载到进程时。</p>
+<p>DLL_PROCESS_DETACH：DLL 从进程卸载时。</p>
+<p>DLL_THREAD_ATTACH：进程创建新线程时。</p>
+<p>DLL_THREAD_DETACH：线程终止时。</p>
+<p>如果这些时机你都不需要做任何特殊处理，那么省略 DllMain 是完全安全的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;pch.h&quot;</span></span></span><br><span class="line">BOOL APIENTRY <span class="title function_">DllMain</span><span class="params">(</span></span><br><span class="line"><span class="params">    HMODULE hModule,</span></span><br><span class="line"><span class="params">    DWORD ul_reason_for_call,</span></span><br><span class="line"><span class="params">    LPVOIP lpReserved</span></span><br><span class="line"><span class="params">)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">switch</span>(ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>APIENTRY：这是一个宏定义，代表 __stdcall<br>hModule:当前DLL的句柄<br>ul_reason_for_call:调用原因<br>lpReserved：保留参数</p>
+<p>DLL_PROCESS_ATTACH:进程附加,有一个新的程序（进程）把这个 DLL 加载到了它的内存里。<br>DLL_THREAD_ATTACH:线程附加,加载了这个 DLL 的程序里，新建了一个线程。<br>DLL_THREAD_DETACH:线程分离,程序里的某个线程结束了。<br>DLL_PROCESS_DETACH:进程分离,程序要把这个 DLL 卸载掉，或者程序本身退出了。</p>
+<h2 id="导出"><a href="#导出" class="headerlink" title="导出"></a>导出</h2><p>我们之前提到：DLL里并不是所有的函数都必须供其他模块使用，而是只有经过导出的函数才能被其他模块使用。</p>
+<p>而导出DLL的方式：</p>
+<ol>
+<li><p>声明导出</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> PCH_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PCH_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;framework.h&quot;</span></span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> _declspec(dllexport) function</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> pch是 Pre-Compiled Header（预编译头文件） 的缩写<br> 是 Visual Studio（VS）自动生成的，你可以把那些常用且几乎不会去修改的头文件，统统塞进 pch.h 里。</p>
+<p> extern “C”：我们都知道c++有重载机制，名称可以一样，只要参数不同即可，为什么呢？就是因为c++有名称粉碎机制，但是名称粉碎的话，我们就没办法以名称导出了，所以我们选择使用extern “C”，告诉编译器用纯c的命名规则来编译，不改变他的名字。</p>
+<p> __declspec(dllexport)：__declspec 是微软特有的修饰符，dllexport就是dll导出。它告诉编译器把这个函数的名字和地址，写进 DLL 的导出表。</p>
+<p> function：函数声明，类似于extern “C” __declspec(dllexport) int Add(int a, int b);这种。</p>
+</li>
+<li><p>模块定义文件导出</p>
+<p> 我们创建一个.def文件</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LIBRARY <span class="string">&quot;MyDll&quot;</span></span><br><span class="line">EXPORTS</span><br><span class="line">my_main @ <span class="number">1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> LIBRARY “MyDll”:链接器会在生成的 .dll 文件头（PE 头）里写上<strong>MyDll</strong>这个名字。<br> EXPORTS:导出的开始,告诉链接器下面列出的一行行名字，都是允许外部程序调用的函数或变量,可以加进导出表。</p>
+<p> my_main @ 1：my_main只是一个示例，你在这里标注出你要导出的函数名，@ 1是该函数指定的序号</p>
+<p> 模块导出文件的意义：<br> 不改源码强行导出：可以在不改变.h或者.c的情况下，强行导出<br> 控制导出名：有时候代码里的函数叫 InternalName，但你希望外部调用时叫 PublicName，.def 文件可以轻松实现：PublicName &#x3D; InternalName</p>
+</li>
+</ol>
+<h2 id="DLL导入"><a href="#DLL导入" class="headerlink" title="DLL导入"></a>DLL导入</h2><ol>
+<li><p>通过隐式链接的方式调dll导出的函数(需要.lib)</p>
+<p> #pragma comment(lib,”xx.lib”)<br> 作用就是让链接器在创建exe的同时把.lib接上，你的 EXE 程序在刚启动的时候，操作系统就会自动帮你把需要的 DLL 找出来并加载进去。如果找不到，程序直接启动失败<br> #pragma 的作用是给编译器下达“特定指令”<br> comment作用是给链接器（Linker） 传递一个附加说明<br> lib：告诉链接器：“接下来的这个参数，是一个 .lib 格式的库文件”</p>
+<p> 对于dll项目，编译器会产生两个文件，分别是.DLL和.lib其中dll是动态链接库，lib是导入库，保存了一些符号和地址的对应地址和信息，不能单独使用，必须与dll共存，用于动态链接库的隐式链接。</p>
+<p> .lib里面存放了这些信息：<br> DLL文件名<br> 符号表：记录了 DLL 里到底导出了哪些函数名比如 my_main、Add<br> 桩代码：对于每一个导出的函数，导入库会生成一段极短的跳转代码。比如你代码里调用了 Add(1, 2)，链接器不会把真实的加法代码放进来，而是把这个“桩代码”放进来。</p>
+<p> 不过要注意，无论是通过#include “MyDll.h”还是在exe的头文件里标注，都要提供函数声明。</p>
+</li>
+<li><p>显示链接方式调用导出函数(不需要.lib)</p>
+<p> 这个方法要用到Windows的api函数LoadLibrary()</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="title function_">int</span> <span class="params">(*function)</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span><br><span class="line">HMODLE hModule=LoadLibraryW(<span class="string">L&quot;mydll.dll&quot;</span>);</span><br><span class="line">function fun = (function)GetProcAddress(hModule,<span class="string">&quot;function&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (func != <span class="literal">NULL</span>) &#123;</span><br><span class="line">func(<span class="number">10</span>, <span class="number">20</span>); </span><br><span class="line">&#125;</span><br><span class="line">FreeLibrary(hModule);</span><br></pre></td></tr></table></figure>
+<p> typedef int (*PFN_MY_MAIN)(int, int); &#x2F;&#x2F; 定义函数指针类型</p>
+</li>
+</ol>
+<h2 id="静态库"><a href="#静态库" class="headerlink" title="静态库"></a>静态库</h2><p>静态库又叫对象库，其中的代码在运行链接器进行静态链接时被添加到程序的exe文件中，静态链接库最终会与调用程序融为一体，其文件后缀也是.lib</p>
+<p>静态链接库只能隐式调用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io">JackHare（风景画）</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://fengjinghua69.github.io/2026/11/26/DLL/">https://fengjinghua69.github.io/2026/11/26/DLL/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://fengjinghua69.github.io" target="_blank">JackHare'blogs</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DLL/">DLL</a></div><div class="post-share"><div class="social-share" data-image="/img/JackHare.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/11/22/PE-relocation/" title="PE-relocation"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">PE-relocation</div></div><div class="info-2"><div class="info-item-1">为什么会需要重定位表呢？如果一个PE文件，ImageBase&#x3D;0x400000，程序里面有一条指令，他需要访问一个被写死的绝对地址mov eax, [0x403000]这里的 0x403000 是指令中写死的内存地址。 假设这条指令在 PE 映像中的 RVA 是 0x1010，机器码是：A1 00 30 40 00地址是00 30 40 00 现在问题来了，Windows无法把程序加载到首选地址0x400000，而是加载到了0x500000原本写死的地址，是在能加载到首选地址的前提下才正确，所以我们就需要重定位。 Delta&#x3D;实际加载基址-首选加载基址Delta&#x3D;0x500000-0x400000&#x3D;0x100000原地址+Delta&#x3D;正确的新地址0x403000+0x100000&#x3D;0x503000 之前我们学习了导入导出表，他们的定位基本大同小异，都是去找数据目录表里记录的偏移。导出表是[0]导入表是[1],而重定位表则是[5]，其中就记录着重定位表的起始偏移RVA，依旧是去看区段表的RVA范围，看他在哪个段内之后再使用...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/JackHare.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">JackHare（风景画）</div><div class="author-info-description">关于逆向的内容分享！wp，笔记等，欢迎交流分享！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">71</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/fengjinghua69"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/fengjinghua69" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:HareJack168@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">目标学会脱VMP...</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DllMain"><span class="toc-number">1.</span> <span class="toc-text">DllMain</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%87%BA"><span class="toc-number">2.</span> <span class="toc-text">导出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL%E5%AF%BC%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">DLL导入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">静态库</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/26/DLL/" title="DLL">DLL</a><time datetime="2026-11-26T00:46:01.000Z" title="发表于 2026-11-26 08:46:01">2026-11-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/22/PE-relocation/" title="PE-relocation">PE-relocation</a><time datetime="2026-11-22T13:26:40.000Z" title="发表于 2026-11-22 21:26:40">2026-11-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/20/PE-import/" title="PE-import">PE-import</a><time datetime="2026-11-20T09:29:17.000Z" title="发表于 2026-11-20 17:29:17">2026-11-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/17/PE-export/" title="PE-export">PE-export</a><time datetime="2026-11-17T12:48:46.000Z" title="发表于 2026-11-17 20:48:46">2026-11-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/17/PE-section/" title="PE-section">PE-section</a><time datetime="2026-11-17T04:12:28.000Z" title="发表于 2026-11-17 12:12:28">2026-11-17</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By JackHare（风景画）</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.2</a></span></div><div class="footer_custom_text">JackHare's Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.2"></script><script src="/js/main.js?v=5.7.2"></script><div class="js-pjax"></div><div id="global-aplayer" class="aplayer"></div><script src="/libs/aplayer/APlayer.min.js"></script><script>
+(function () {
+  var container = document.getElementById('global-aplayer')
+  if (!container || typeof APlayer === 'undefined' || window.__globalAPlayer) return
+  window.__globalAPlayer = new APlayer({
+    container: container,
+    audio: [{
+      name: '如果呢',
+      artist: '郑润泽',
+      url: 'https://music.163.com/song/media/outer/url?id=1842728629.mp3',
+      cover: '/img/Banner.jpg'
+    }],
+    fixed: true,
+    mini: true,
+    autoplay: false,
+    theme: '#49B1F5',
+    loop: 'all',
+    order: 'list',
+    preload: 'auto',
+    listFolded: true,
+    listMaxHeight: '200px'
+  })
+})()
+</script>
+<script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script src="/libs/pjax/pjax.min.js?v=0.2.8" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([data-fancybox])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      if (!item.parentNode) return
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || ''
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    const responseURL = e.request && e.request.responseURL
+    if (e.request && e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : responseURL && (window.location.href = responseURL)
+    } else if (responseURL) {
+      window.location.href = responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.7.2"></script></div></div></body></html>
